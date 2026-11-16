@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интернет – территория безопасности</title>
+    <style>
+
+
+        :root {
+            --bg-dark: #030712;
+            --panel-bg: rgba(15, 23, 42, 0.65);
+            --neon-blue: #00d2ff;
+            --neon-purple: #7c3aed;
+            --neon-green: #10b981;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --card-border: rgba(56, 189, 248, 0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+
+
+        body { background: var(--bg-dark); color: var(--text-light); min-height: 100vh; padding: 20px; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; position: relative; }
+        body::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 20%, #1e1b4b 0%, transparent 60%); z-index: -1; }
+
+
+        .container { width: 100%; max-width: 1200px; background: var(--panel-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 32px; padding: 40px; box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1); margin-bottom: 30px; position: relative; }
+
+
+        .system-status { position: absolute; top: 20px; right: 40px; display: flex; align-items: center; gap: 8px; font-size: 0.8rem; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; color: #38bdf8; background: rgba(56, 189, 248, 0.05); padding: 6px 16px; border-radius: 20px; border: 1px solid rgba(56, 189, 248, 0.2); }
+        .system-status::before { content: ''; display: inline-block; width: 8px; height: 8px; background: #38bdf8; border-radius: 50%; box-shadow: 0 0 10px #38bdf8; }
+        .top-shield-icon { position: absolute; top: 15px; left: 40px; font-size: 1.8rem; color: var(--neon-blue); filter: drop-shadow(0 0 8px var(--neon-blue)); }
+
+
+        header { text-align: center; margin-bottom: 45px; margin-top: 15px; position: relative; }
+        header h1 { font-size: 3.2rem; font-weight: 900; letter-spacing: -0.5px; color: #ffffff; text-shadow: 0 0 20px rgba(255,255,255,0.15); margin-bottom: 15px; }
+        .header-sub-wrapper { display: flex; align-items: center; justify-content: center; gap: 20px; }
+        .header-line { width: 60px; height: 3px; background: linear-gradient(90deg, transparent, var(--neon-blue)); border-radius: 2px; }
+        .header-line.right { background: linear-gradient(90deg, var(--neon-blue), transparent); }
+        header p { color: var(--text-muted); font-size: 1.25rem; font-weight: 500; letter-spacing: 0.5px; }
+
+
+        /* ГЛАВНОЕ МЕНЮ: НА ПРЕЖНИХ МЕСТАХ (В ОДИН РЯД НА БОЛЬШИХ ЭКРАНАХ) */
+        .main-dashboard-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 20px; margin-bottom: 45px; }
+        @media (min-width: 550px) { .main-dashboard-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 950px) { .main-dashboard-grid { grid-template-columns: repeat(4, 1fr); } }
+
+
+        .nav-card { background: rgba(15, 23, 42, 0.4); border: 2px solid rgba(124, 58, 237, 0.3); border-radius: 24px; padding: 35px 20px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; min-height: 380px; position: relative; transition: var(--transition); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); }
+        .nav-card:nth-child(even) { border-color: rgba(0, 210, 255, 0.3); }
+
+
+        .nav-card:hover { transform: translateY(-8px); background: rgba(30, 41, 59, 0.5); box-shadow: 0 15px 40px rgba(124, 58, 237, 0.15); border-color: var(--neon-purple); }
+        .nav-card:nth-child(even):hover { box-shadow: 0 15px 40px rgba(0, 210, 255, 0.15); border-color: var(--neon-blue); }
+        .nav-card.active { background: rgba(30, 41, 59, 0.8) !important; border-color: #ffffff !important; box-shadow: 0 0 30px rgba(255, 255, 255, 0.15) !important; }
+
+
+        .nav-card-icon-container { width: 110px; height: 110px; display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 15px; }
+        .nav-card-svg { width: 100%; height: 100%; filter: drop-shadow(0 0 12px var(--neon-purple)); }
+        .nav-card:nth-child(even) .nav-card-svg { filter: drop-shadow(0 0 12px var(--neon-blue)); }
+
+
+        .nav-card-title { font-size: 1.25rem; font-weight: 700; color: #ffffff; line-height: 1.4; margin-bottom: 25px; transition: var(--transition); letter-spacing: 0.3px; min-height: 56px; display: flex; align-items: center; justify-content: center; }
+        .nav-card:hover .nav-card-title { text-shadow: 0 0 10px #ffffff; }
+        .nav-card-arrow-btn { width: 54px; height: 36px; border-radius: 20px; border: 2px solid rgba(124, 58, 237, 0.5); background: rgba(124, 58, 237, 0.1); display: flex; align-items: center; justify-content: center; color: var(--neon-purple); font-size: 1.2rem; font-weight: 900; transition: var(--transition); }
+
+
+        .nav-card:nth-child(even) .nav-card-arrow-btn { border-color: rgba(0, 210, 255, 0.5); background: rgba(0, 210, 255, 0.1); color: var(--neon-blue); }
+        .nav-card:hover .nav-card-arrow-btn { width: 70px; background: var(--neon-purple); color: #ffffff; border-color: transparent; box-shadow: 0 0 15px var(--neon-purple); }
+        .nav-card:nth-child(even):hover .nav-card-arrow-btn { background: var(--neon-blue); color: #ffffff; border-color: transparent; box-shadow: 0 0 15px var(--neon-blue); }
+
+
+        .tab-content { display: none; margin-top: 20px; animation: fadeIn 0.4s ease-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* СТИЛИ БОЛЬШОГО КИБЕР-ПЛАКАТА */
+        .interactive-poster { background: linear-gradient(135deg, #0b0f19, #111827); border-radius: 24px; padding: 30px; color: #ffffff; margin-bottom: 35px; border: 1px solid rgba(56, 189, 248, 0.2); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 25px rgba(0, 210, 255, 0.05); text-align: center; width: 100%; }
+
+
+        .poster-main-grid { display: grid; grid-template-columns: 1fr; gap: 25px; margin-top: 25px; }
+        @media (min-width: 850px) { .poster-main-grid { grid-template-columns: 320px 1fr; } }
+        .poster-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .poster-node { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 20px 15px; cursor: pointer; transition: var(--transition); user-select: none; display: flex; flex-direction: column; align-items: center; gap: 10px; font-weight: 600; font-size: 1.05rem; color: #cbd5e1; }
+
+
+        .poster-node:hover { background: rgba(56, 189, 248, 0.08); border-color: var(--neon-blue); transform: translateY(-3px); color: #fff; box-shadow: 0 5px 15px rgba(0, 210, 255, 0.1); }
+        .poster-node.active { background: linear-gradient(135deg, rgba(2, 132, 199, 0.4), rgba(124, 58, 237, 0.4)); border-color: var(--neon-blue); box-shadow: 0 0 25px rgba(56, 189, 248, 0.25); color: #ffffff; }
+        .poster-node-icon { font-size: 1.8rem; }
+        .poster-control-panel { display: flex; flex-direction: column; gap: 20px; background: rgba(0, 0, 0, 0.4); border-radius: 18px; padding: 25px; border: 1px solid rgba(255, 255, 255, 0.05); text-align: left; }
+
+
+        .scanner-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 12px; }
+        .scanner-title { font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #38bdf8; font-size: 0.95rem; }
+        .threat-indicator { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; background: rgba(255, 255, 255, 0.04); padding: 4px 12px; border-radius: 20px; border: 1px solid transparent; }
+        .threat-low { color: #34d399; border-color: rgba(52, 211, 153, 0.2); } .threat-medium { color: #fbbf24; border-color: rgba(251, 191, 36, 0.2); } .threat-high { color: #f87171; border-color: rgba(248, 113, 113, 0.2); }
+
+
+        .poster-screen { min-height: 120px; font-size: 1.1rem; line-height: 1.6; color: #e2e8f0; transition: var(--transition); }
+        .poster-screen b { color: #38bdf8; }
+        .action-card { background: rgba(16, 185, 129, 0.06); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 15px; margin-top: 15px; display: none; box-shadow: 0 0 15px rgba(16, 185, 129, 0.03); }
+        .action-card-title { font-weight: 700; color: #34d399; margin-bottom: 5px; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
+
+        /* КАРТОЧКИ СПРАВОЧНИКА: СТРОГО ПО ДВЕ КАРТОЧКИ В РЯД (ИСПРАВЛЕНО ИЗ СКРИНШОТА) */
+        .grid-2 { display: grid; grid-template-columns: repeat(1, 1fr); gap: 25px; margin-bottom: 25px; }
+        @media (min-width: 768px) { .grid-2 { grid-template-columns: repeat(2, 1fr); } }
+        
+        .flip-card { background-color: transparent; width: 100%; min-height: 260px; perspective: 1000px; margin-bottom: 5px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: left; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 18px; padding: 25px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(255, 255, 255, 0.06); }
+
+
+        .flip-card-front { background: rgba(30, 41, 59, 0.4); color: var(--text-light); }
+        .flip-card-front.danger-card { border-top: 5px solid var(--danger); }
+        .flip-card-front.success-card { border-top: 5px solid var(--success); }
+        
+        .flip-card-back { color: #ffffff; transform: rotateY(180deg); }
+        .flip-card-front.danger-card ~ .flip-card-back { background: linear-gradient(135deg, #1e1b4b, #7f1d1d); border-color: rgba(239, 68, 68, 0.3); box-shadow: 0 0 20px rgba(239, 68, 68, 0.1); }
+        .flip-card-front.success-card ~ .flip-card-back { background: linear-gradient(135deg, #064e3b, #022c22); border-color: rgba(16, 185, 129, 0.3); box-shadow: 0 0 20px rgba(16, 185, 129, 0.1); }
+        
+        .flip-card-back h3 { color: #ffffff !important; margin-top: 0; }
+        .flip-card-back p { color: #cbd5e1 !important; font-size: 1.05rem; line-height: 1.5; margin-bottom: 0; }
+
+
+        .flip-btn { background: rgba(2, 132, 199, 0.08); color: var(--neon-blue); border: none; padding: 8px 14px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; align-self: flex-end; transition: var(--transition); }
+        .flip-btn:hover { background: var(--neon-blue); color: #ffffff; }
+        .flip-card-back .flip-btn { background: rgba(255, 255, 255, 0.2); color: #ffffff; }
+        .flip-card-back .flip-btn:hover { background: #ffffff; color: var(--text-main); }
+
+        .exercise-block, .question-block { background: rgba(30, 41, 59, 0.3); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 18px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); width: 100%; }
+        .options-list { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-top: 15px; width: 100%; }
+        .option-item { background: rgba(15, 23, 42, 0.3); border: 1px solid rgba(255, 255, 255, 0.05); padding: 16px 20px; border-radius: 14px; cursor: pointer; display: flex; align-items: center; gap: 14px; transition: var(--transition); width: 100%; color: var(--text-light); }
+        .option-item:hover { background: rgba(30, 41, 59, 0.5); border-color: rgba(56, 189, 248, 0.3); }
+        .option-item input[type='radio'], .option-item input[type='checkbox'] { accent-color: var(--neon-blue); width: 22px; height: 22px; cursor: pointer; flex-shrink: 0; }
+        .btn-group { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+
+
+        .btn { padding: 12px 26px; border-radius: 12px; border: none; cursor: pointer; font-weight: 600; font-size: 1rem; transition: var(--transition); }
+        .btn-primary { background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.2); }
+        .btn-primary:hover { background: linear-gradient(135deg, #0369a1, #075985); box-shadow: 0 4px 20px rgba(2, 132, 199, 0.4); transform: translateY(-1px); }
+        .btn-secondary { background: rgba(255, 255, 255, 0.05); color: #e2e8f0; border: 1px solid rgba(255, 255, 255, 0.08); }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.15); }
+        .feedback { margin-top: 16px; font-weight: 600; padding: 14px; border-radius: 12px; display: none; }
+        .feedback.correct-text { background: rgba(16, 185, 129, 0.1); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.2); display: block; }
+        .feedback.wrong-text { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); display: block; }
+        .correct-choice { background: rgba(16, 185, 129, 0.08) !important; border-color: var(--neon-green) !important; color: #34d399; }
+        .wrong-choice { background: rgba(239, 68, 68, 0.08) !important; border-color: var(--danger) !important; color: #f87171; }
+        .blank-input { background: rgba(0, 0, 0, 0.2); border: 2px solid rgba(255, 255, 255, 0.1); color: var(--neon-blue); padding: 8px 16px; border-radius: 10px; font-size: 1.05rem; width: 170px; text-align: center; font-weight: 600; transition: var(--transition); }
+        .blank-input:focus { outline: none; border-color: var(--neon-blue); background: rgba(0, 0, 0, 0.4); box-shadow: 0 0 10px rgba(0, 210, 255, 0.2); }
+
+
+        .chat-box { background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 20px; margin-top: 15px; width: 100%; max-width: 650px; min-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .chat-msg { padding: 12px 16px; border-radius: 16px; font-size: 1rem; max-width: 80%; line-height: 1.5; word-wrap: break-word; }
+        .msg-hacker { background: rgba(239, 68, 68, 0.1); color: #f87171; border-left: 5px solid var(--danger); align-self: flex-start; }
+        .msg-user { background: rgba(56, 189, 248, 0.1); color: #38bdf8; border-right: 5px solid var(--neon-blue); align-self: flex-end; text-align: right; }
+        
+        .parent-calc-container { background: rgba(15, 23, 42, 0.3); border: 2px dashed var(--neon-purple); border-radius: 16px; padding: 22px; margin-top: 20px; width: 100%; }
+        .calc-score-box { background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 15px; text-align: center; margin-top: 15px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .calc-score-val { font-size: 2.5rem; font-weight: 800; color: var(--neon-purple); text-shadow: 0 0 10px rgba(124, 58, 237, 0.3); }
+        @media (max-width: 768px) { header h1 { font-size: 2rem; } .btn-group { flex-direction: column; } }
+#test .question-block h3 {
+    color: #FDE047;
+}
+ .exercise-block h3 {
+    color: #FDE047;
+}
+.flip-card-front h3,
+.flip-card-back h3,
+.flip-front h3,
+.flip-back h3,
+.flip-card h3 {
+    color: #FDE047 !important;
+}
+
+.poster-grid div,
+.poster-grid span,
+.poster-grid p,
+.poster-node,
+.poster-node span,
+.sector-btn {
+    color: #FDE047 !important;
+}
+
+ </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-shield-icon">🛡️</div>
+        <div class="system-status">Система активна // Защищенный режим</div>
+
+
+        <header>
+            <h1>Интернет – территория безопасности</h1>
+            <div class="header-sub-wrapper">
+                <div class="header-line"></div>
+                <p>Интерактивный путеводитель по информационной безопасности</p>
+                <div class="header-line right"></div>
+            </div>
+        </header>
+
+        <!-- ДЕШБОРД НАВИГАЦИИ (РАСПОЛОЖЕН НА ПРЕЖНИХ МЕСТАХ) -->
+        <nav class="main-dashboard-grid">
+            <!-- КАРТОЧКА 1 -->
+            <div class="nav-card active" id="btn_learning" onclick="openTab(event, 'learning')">
+                <div class="nav-card-icon-container">
+                    <svg class="nav-card-svg" viewBox="0 0 100 100">
+                        <polygon points="50,15 80,32 80,68 50,85 20,68 20,32" fill="none" stroke="#7c3aed" stroke-width="3"/>
+                        <line x1="50" y1="15" x2="50" y2="85" stroke="#7c3aed" stroke-width="2"/>
+                        <line x1="50" y1="50" x2="80" y2="32" stroke="#7c3aed" stroke-width="2"/>
+                        <line x1="50" y1="50" x2="20" y2="32" stroke="#7c3aed" stroke-width="2"/>
+                        <circle cx="50" cy="50" r="4" fill="#7c3aed"/>
+                        <circle cx="50" cy="15" r="3" fill="#00d2ff"/>
+                        <circle cx="80" cy="32" r="3" fill="#00d2ff"/>
+                        <circle cx="80" cy="68" r="3" fill="#00d2ff"/>
+                        <circle cx="50" cy="85" r="3" fill="#00d2ff"/>
+                        <circle cx="20" cy="68" r="3" fill="#00d2ff"/>
+                        <circle cx="20" cy="32" r="3" fill="#00d2ff"/>
+                    </svg>
+                </div>
+                <div class="nav-card-title">Интерактивный<br>инфокомплекс</div>
+                <button class="nav-card-arrow-btn">❯</button>
+            </div>
+
+
+            <!-- КАРТОЧКА 2 -->
+            <div class="nav-card" id="btn_practice" onclick="openTab(event, 'practice')">
+                <div class="nav-card-icon-container">
+                    <svg class="nav-card-svg" viewBox="0 0 100 100">
+                        <path d="M50,15 C65,15 75,22 80,35 C80,60 65,80 50,85 C35,80 20,60 20,35 C25,22 35,15 50,15 Z" fill="none" stroke="#00d2ff" stroke-width="3"/>
+                        <path d="M25,50 L40,50 L45,35 L52,65 L58,45 L63,53 L75,53" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="nav-card-title">Тренажер<br>кибериммунитета</div>
+                <button class="nav-card-arrow-btn">❯</button>
+            </div>
+
+
+            <!-- КАРТОЧКА 3 -->
+            <div class="nav-card" id="btn_test" onclick="openTab(event, 'test')">
+                <div class="nav-card-icon-container">
+                    <svg class="nav-card-svg" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="35" fill="none" stroke="#7c3aed" stroke-width="2"/>
+                        <circle cx="50" cy="50" r="23" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="4 3"/>
+                        <circle cx="50" cy="50" r="12" fill="none" stroke="#7c3aed" stroke-width="1"/>
+                        <line x1="50" y1="15" x2="50" y2="85" stroke="#7c3aed" stroke-width="1"/>
+                        <line x1="15" y1="50" x2="85" y2="50" stroke="#7c3aed" stroke-width="1"/>
+                        <path d="M52,20 A30,30 0 0,1 80,50" fill="none" stroke="#00d2ff" stroke-width="3" stroke-linecap="round"/>
+                        <polygon points="45,52 49,56 58,46" fill="none" stroke="#00d2ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="nav-card-title">Контроль цифровой<br>грамотности</div>
+                <button class="nav-card-arrow-btn">❯</button>
+            </div>
+
+
+            <!-- КАРТОЧКА 4 -->
+            <div class="nav-card" id="btn_parents" onclick="openTab(event, 'parents')">
+                <div class="nav-card-icon-container">
+                    <svg class="nav-card-svg" viewBox="0 0 100 100">
+                        <line x1="50" y1="20" x2="50" y2="80" stroke="#00d2ff" stroke-width="3"/>
+                        <line x1="30" y1="30" x2="70" y2="30" stroke="#00d2ff" stroke-width="3"/>
+                        <line x1="35" y1="80" x2="65" y2="80" stroke="#00d2ff" stroke-width="2"/>
+                        <line x1="35" y1="30" x2="25" y2="55" stroke="#00d2ff" stroke-width="1"/>
+                        <line x1="35" y1="30" x2="45" y2="55" stroke="#00d2ff" stroke-width="1"/>
+                        <path d="M22,55 Q35,65 48,55 Z" fill="none" stroke="#00d2ff" stroke-width="2"/>
+                        <line x1="65" y1="30" x2="55" y2="55" stroke="#00d2ff" stroke-width="1"/>
+                        <line x1="65" y1="30" x2="75" y2="55" stroke="#00d2ff" stroke-width="1"/>
+                        <path d="M52,55 Q65,65 78,55 Z" fill="none" stroke="#00d2ff" stroke-width="2"/>
+                    </svg>
+                </div>
+                <div class="nav-card-title">Правовой навигатор и<br>калькулятор рисков</div>
+                <button class="nav-card-arrow-btn">❯</button>
+            </div>
+        </nav>
+
+        <!-- ТАБ: ИНТЕРАКТИВНЫЙ ИНФОКОМПЛЕКС -->
+        <div id="learning" class="tab-content active">
+            <div class="interactive-poster">
+                <h2 style="color: #22D3EE; margin-bottom: 10px;">🗺️ Интерактивный кибер-плакат</h2>
+                <p style="color: #94a3b8;">Полноэкранный аналитический комплекс. Кликайте по секторам угроз для симуляции защиты</p>
+                <div class="poster-main-grid">
+                    <div class="poster-grid">
+                        <div class="poster-node" onclick="clickPoster(this, 'fish')"><span class="poster-node-icon">🎣</span><span>Фишинг</span></div>
+                        <div class="poster-node" onclick="clickPoster(this, 'soc')"><span class="poster-node-icon">🎭</span><span>Шантаж</span></div>
+                        <div class="poster-node" onclick="clickPoster(this, 'fake')"><span class="poster-node-icon">🤖</span><span>Дипфейки</span></div>
+                        <div class="poster-node" onclick="clickPoster(this, 'pass')"><span class="poster-node-icon">🔑</span><span>Пароли</span></div>
+                        <div class="poster-node" onclick="clickPoster(this, 'drop')"><span class="poster-node-icon">💳</span><span>Дропперы</span></div>
+                        <div class="poster-node" onclick="clickPoster(this, 'wifi')"><span class="poster-node-icon">📶</span><span>Открытый Wi-Fi</span></div>
+                        <div class="poster-node" onclick="clickPoster(this, 'virus')"><span class="poster-node-icon">🪱</span><span>Вирусы/Читы</span></div>
+                        <div class="poster-node" onclick="clickPoster(this, 'trace')"><span class="poster-node-icon">👣</span><span>Цифровой след</span></div>
+                    </div>
+
+
+                    <div class="poster-control-panel">
+                        <div class="scanner-header">
+                            <div class="scanner-title">📡 Локальный сканер безопасности</div>
+                            <div class="threat-indicator" id="threatLevel">Уровень: -</div>
+                        </div>
+                        <div class="poster-screen" id="posterDisplay">
+                            Выделите сектор на плакате для запуска диагностического модуля и вывода протоколов защиты информации.
+                        </div>
+                        <div class="action-card" id="actionCard">
+                            <div class="action-card-title">🛡️ Инструкция по ликвидации угрозы:</div>
+                            <div id="actionContent"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ИСПРАВЛЕННЫЙ ЗАГОЛОВОК СТРОГО ПО ВАШЕМУ ТРЕБОВАНИЮ -->
+            <h2 style="color: #22D3EE; text-align: center;">📖 Справочник цифрового иммунитета</h2>
+            <div class="grid-2">
+
+
+                <!-- Карточка 1 -->
+                <div class="flip-card" id="card1">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front danger-card">
+                            <div>
+                                <h3>🎣 1. Фишинг («Цифровая рыбалка»)</h3>
+                                <p style="margin-top:10px;">Мошенники создают идеальные фальшивые копии популярных сайтов (Roblox, VK, Steam), чтобы незаметно украсть твои логины, пароли и ценное имущество.</p>
+                            </div>
+                            <button class="flip-btn" onclick="toggleCard('card1')">Нажми, чтобы перевернуть 🔄</button>
+                        </div>
+                        <div class="flip-card-back">
+                            <div>
+                                <h3>🛡️ Как защититься:</h3>
+                                <p>Всегда внимательно проверяй буквы в адресной строке браузера перед вводом данных. Не переходи по ссылкам от незнакомцев, обещающих бесплатную игровую валюту.</p>
+                            </div>
+                            <button class="flip-btn" onclick="toggleCard('card1')">Вернуть назад ↩️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Карточка 2 -->
+                <div class="flip-card" id="card2">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front danger-card">
+                            <div>
+                                <h3>🎭 2. Социальная инженерия</h3>
+                                <p style="margin-top:10px;">Злоумышленники используют хитрые психологические уловки и манипуляции, притворяясь строгой администрацией, модераторами игр или попавшими в беду друзьями.</p>
+                            </div>
+                            <button class="flip-btn" onclick="toggleCard('card2')">Нажми, чтобы перевернуть 🔄</button>
+                        </div>
+                        <div class="flip-card-back">
+                            <div>
+                                <h3>🛡️ Как защититься:</h3>
+                                <p>Не поддавайся панике, если тебя торопят, запугивают блокировкой или требуют срочных действий. Прекрати диалог и посоветуйся со взрослыми.</p>
+                            </div>
+                            <button class="flip-btn" onclick="toggleCard('card2')">Вернуть назад ↩️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Карточка 3 -->
+                <div class="flip-card" id="card3">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front danger-card">
+                            <div>
+                                <h3>🤖 3. Дипфейки (ИИ-подделки)</h3>
+                                <p style="margin-top:10px;">Современные нейросети способны за пару секунд сгенерировать фальшивое видео с твоим лицом или скопировать голос твоего близкого друга по короткой аудиозаписи.</p>
+                            </div>
+                            <button class="flip-btn" onclick="toggleCard('card3')">Нажми, чтобы перевернуть 🔄</button>
+                        </div>
+                        <div class="flip-card-back">
+                            <div>
+                                <h3>🛡️ Как защититься:</h3>
+                                <p>Если друг в голосовом сообщении или на видео просит перевести деньги, перезвони ему по обычной связи и задай секретный личный вопрос.</p>
+                            </div>
+                            <button class="flip-btn" onclick="toggleCard('card3')">Вернуть назад ↩️</button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Карточка 4 -->
+                <div class="flip-card" id="card4">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front danger-card">
+                            <div>
+                                <h3>💬 4. ИИ Чат-боты под прикрытием</h3>
+                                <p style="margin-top:10px;">Злоумышленники настраивают умных ботов, которые общаются в игровых чатах как реальные подростки, медленно втираясь в доверие ради получения личной информации.</p>
+                            </div>
+                            <button class="flip-btn" onclick="toggleCard('card4')">Нажми, чтобы перевернуть 🔄</button>
+                        </div>
+                        <div class="flip-card-back">
+                            <div>
+                                <h3>🛡️ Как защититься:</h3>
+                                <p>Никогда и ни при каких условиях не рассказывай виртуальным знакомым, где ты живешь, в какой школе учишься и когда родителей нет дома.</p>
+                            </div>
+                            <button class="flip-btn" onclick="toggleCard('card4')">Вернуть назад ↩️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Карточка 5 -->
+                <div class="flip-card" id="card5">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front danger-card">
+                            <div>
+                                <h3>💳 5. Дропперство (Легкие деньги)</h3>
+                                <p style="margin-top:10px;">Ловушка, в которой тебе предлагают быстрый заработок за то, чтобы ты оформил на свое имя банковскую карту и просто отдал её чужим людям.</p>
+                            </div>
+                            <button class="flip-btn" onclick="toggleCard('card5')">Нажми, чтобы перевернуть 🔄</button>
+                        </div>
+                        <div class="flip-card-back">
+                            <div>
+                                <h3>🛡️ Как защититься:</h3>
+                                <p>Запомни: передача своей карты третьим лицам строго запрещена законом РБ. Это соучастие в отмывании наворованных денег, ответственность наступает с 14 лет.</p>
+                            </div>
+                            <button class="flip-btn" onclick="toggleCard('card5')">Вернуть назад ↩️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Карточка 6 -->
+                <div class="flip-card" id="card6">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front danger-card">
+                            <div>
+                                <h3>📶 6. Опасности открытого Wi-Fi</h3>
+                                <p style="margin-top:10px;">Бесплатные Wi-Fi сети в парках, торговых центрах или кафе не защищены сквозным шифрованием. Хакеры могут легко перехватить передаваемые пароли.</p>
+                            </div>
+                            <button class="flip-btn" onclick="toggleCard('card6')">Нажми, чтобы перевернуть 🔄</button>
+                        </div>
+                        <div class="flip-card-back">
+                            <div>
+                                <h3>🛡️ Как защититься:</h3>
+                                <p>Никогда не вводи пароли от игровых аккаунтов, почты и не заходи в онлайн-банки, подключившись к общественному Wi-Fi. Используй мобильный интернет.</p>
+                            </div>
+                            <button class="flip-btn" onclick="toggleCard('card6')">Вернуть назад ↩️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Карточка 7 -->
+                <div class="flip-card" id="card7">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front success-card">
+                            <div>
+                                <h3>🔒 7. Двухфакторная защита (2FA)</h3>
+                                <p style="margin-top:10px;">Это самый надежный дополнительный бронированный замок для твоих профилей. Даже если хакер каким-то образом узнает твой пароль, он всё равно не сможет войти.</p>
+                            </div>
+                            <button class="flip-btn" onclick="toggleCard('card7')">Нажми, чтобы перевернуть 🔄</button>
+                        </div>
+                        <div class="flip-card-back">
+                            <div>
+                                <h3>🛡️ Как защититься:</h3>
+                                <p>Обязательно активируй функцию «Вход по СМС» или «Двухфакторная защита» во всех игровых аккаунтах, почтовых ящиках и социальных сетях.</p>
+                            </div>
+                            <button class="flip-btn" onclick="toggleCard('card7')">Вернуть назад ↩️</button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Карточка 8 -->
+                <div class="flip-card" id="card8">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front success-card">
+                            <div>
+                                <h3>📱 8. Цифровая гигиена файлов</h3>
+                                <p style="margin-top:10px;">Неофициальные сайты, «взломанные» сборки игр и читы для получения преимуществ практически всегда содержат скрытые вирусы-трояны.</p>
+                            </div>
+                            <button class="flip-btn" onclick="toggleCard('card8')">Нажми, чтобы перевернуть 🔄</button>
+                        </div>
+                        <div class="flip-card-back">
+                            <div>
+                                <h3>🛡️ Как защититься:</h3>
+                                <p>Скачивай любые программы, приложения и игры исключительно из проверенных официальных магазинов приложений (Google Play, App Store, официальные лаунчеры).</p>
+                            </div>
+                            <button class="flip-btn" onclick="toggleCard('card8')">Вернуть назад ↩️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Карточка 9 -->
+                <div class="flip-card" id="card9">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front success-card">
+                            <div>
+                                <h3>👣 9. Твой Цифровой след</h3>
+                                <p style="margin-top:10px;">Всё, что когда-либо попадает в сеть (фотографии, гневные комментарии, шутки), остается на серверах навсегда, даже если ты нажал кнопку «Удалить».</p>
+                            </div>
+                            <button class="flip-btn" onclick="toggleCard('card9')">Нажми, чтобы перевернуть 🔄</button>
+                        </div>
+                        <div class="flip-card-back">
+                            <div>
+                                <h3>🛡️ Как защититься:</h3>
+                                <p>Веди себя в сети вежливо, уважительно и культурно. Помни, что твое поведение в интернете формирует твою реальную репутацию в будущем.</p>
+                            </div>
+                            <button class="flip-btn" onclick="toggleCard('card9')">Вернуть назад ↩️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Карточка 10 -->
+                <div class="flip-card" id="card10">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front success-card">
+                            <div>
+                                <h3>🗣️ 10. Правило стоп-сигнала</h3>
+                                <p style="margin-top:10px;">Если в интернете происходит что-то странное, пугающее, тебе угрожают, шантажируют или вымогают деньги — не пытайся решить это в одиночку.</p>
+                            </div>
+                            <button class="flip-btn" onclick="toggleCard('card10')">Нажми, чтобы перевернуть 🔄</button>
+                        </div>
+                        <div class="flip-card-back">
+                            <div>
+                                <h3>🛡️ Как защититься:</h3>
+                                <p>Немедленно сделай скриншот экрана с угрозами, заблокируй обидчика и сразу же подробно расскажи обо всём родителям или учителям.</p>
+                            </div>
+                            <button class="flip-btn" onclick="toggleCard('card10')">Вернуть назад ↩️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ИНТЕРАКТИВНЫЙ СЮЖЕТНЫЙ КВЕСТ С УЛУЧШЕННОЙ ЛОГИКОЙ КОНЦА -->
+            <div class="exercise-block" style="display: flex; flex-direction: column; align-items: center; margin-top:30px;">
+                <h2 style="color: #22D3EE; text-align: center;">🤖 Интерактивный сюжетный квест: перехитри мошенника</h2>
+                <p style="text-align: center; color: var(--text-muted); margin-bottom: 15px;">Пройди цепочку диалогов и научись защищать личные данные в реальном времени.</p>
+                <div class="chat-box" id="chatContainer">
+                    <div class="chat-msg msg-hacker" id="questStepText"><b>🤖 Незнакомец (Шаг 1):</b> Привет! Твой игровой профиль взломан! Срочно скинь мне проверочный СМС-код, который тебе сейчас пришёл, иначе забаню аккаунт навсегда через минуту!</div>
+                </div>
+                <div class="btn-group" id="chatAnswers">
+                    <button class="btn btn-secondary" onclick="nextQuestStep(1, false)">⚠️ Ой, испугался! Вот держи код: 7749!</button>
+                    <button class="btn btn-primary" onclick="nextQuestStep(1, true)">🔒 Никаких кодов. Поддержка их никогда не просит.</button>
+                </div>
+                <div id="chat_feedback" class="feedback"></div>
+            </div>
+        </div>
+
+
+        <!-- ТАБ: ТРЕНАЖЕР КИБЕРИММУНИТЕТА -->
+        <div id="practice" class="tab-content">
+            <h2 style="color: #22D3EE; text-align: center;">🎮 Интерактивная тренировочная площадка</h2>
+                   <div class="exercise-block" id="sim1">
+            <h3>Тренажер 1. Заполнение секретных пропусков</h3>
+            <p style="line-height: 1.8;">
+                Чтобы не попасть на фишинговый сайт, нужно внимательно проверять 
+                <input type="text" id="sim1_in1" class="blank-input" placeholder="впиши слово..."> 
+                строку браузера. Секретный код из СМС нельзя никому 
+                <input type="text" id="sim1_in2" class="blank-input" placeholder="впиши слово...">
+            </p>
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary" onclick="checkSim1()">Проверить</button>
+                <button type="button" class="btn btn-secondary" onclick="resetSim1()">Сбросить</button>
+            </div>
+            <div id="sim1_fb" class="feedback"></div>
+        </div>
+
+        <div class="exercise-block" id="sim2">
+            <h3>Тренажер 2. Анализ ИИ-Атаки (Дипфейк)</h3>
+            <p>Твой друг прислал «кружок» в Telegram, где просит скинуть деньги. Что сделаешь?</p>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="sim2_opt" value="wrong"> <span>Сразу переведу, это же видео.</span></label>
+                <label class="option-item"><input type="radio" name="sim2_opt" value="correct"> <span>Перезвоню ему лично по телефону или спрошу кодовое слово.</span></label>
+            </div>
+            <div class="btn-group"><button type="button" class="btn btn-primary" onclick="checkSimRadio('sim2')">Проверить</button></div>
+            <div id="sim2_fb" class="feedback"></div>
+        </div>
+
+        <div class="exercise-block" id="sim3">
+            <h3>Тренажер 3. Чек-лист безопасности</h3>
+            <p>Какие действия безопасны? (Выберите все правильные варианты)</p>
+            <div class="options-list">
+                <label class="option-item"><input type="checkbox" id="sim3_cb1"> <span>Скачивать игры из официальных магазинов приложений.</span></label>
+                <label class="option-item"><input type="checkbox" id="sim3_cb2"> <span>Отправлять фото документов в открытые чаты.</span></label>
+                <label class="option-item"><input type="checkbox" id="sim3_cb3"> <span>Использовать сложные разные пароли и двухфакторную защиту.</span></label>
+            </div>
+            <div class="btn-group"><button type="button" class="btn btn-primary" onclick="checkSim3()">Проверить</button></div>
+            <div id="sim3_fb" class="feedback"></div>
+        </div>
+
+        <div class="exercise-block" id="sim4">
+            <h3>Тренажер 4. Распознавание манипуляции</h3>
+            <p>Баннер сообщает: «Твой телефон заражен! Скачай очиститель за 10 секунд!» Что это?</p>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="sim4_opt" value="correct"> <span>Социальная инженерия (запугивание, чтобы заставить скачать вирус).</span></label>
+                <label class="option-item"><input type="radio" name="sim4_opt" value="wrong"> <span>Реальное сканирование системы браузером.</span></label>
+            </div>
+            <div class="btn-group"><button type="button" class="btn btn-primary" onclick="checkSimRadio('sim4')">Проверить</button></div>
+            <div id="sim4_fb" class="feedback"></div>
+        </div>
+        <div class="exercise-block" id="sim5">
+            <h3>Тренажер 5. Опасные знакомства в сети</h3>
+            <p>Новый знакомый в игре просит оформить на себя банковскую карту за вознаграждение и передать ему реквизиты. Твои действия?</p>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="sim5_opt" value="wrong"> <span>Соглашусь — это лёгкие карманные деньги.</span></label>
+                <label class="option-item"><input type="radio" name="sim5_opt" value="correct"> <span>Откажусь и заблокирую: это дропперство и соучастие в преступлении.</span></label>
+            </div>
+            <div class="btn-group"><button type="button" class="btn btn-primary" onclick="checkSimRadio('sim5')">Проверить</button></div>
+            <div id="sim5_fb" class="feedback"></div>
+        </div>
+
+        <div class="exercise-block" id="sim6">
+            <h3>Тренажер 6. Ловушка с голосованием</h3>
+            <p>В чат прислали ссылку: «Проголосуй за подругу в конкурсе! Нужен вход через Telegram». Как поступишь?</p>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="sim6_opt" value="correct"> <span>Не буду вводить номер и код из СМС — это фишинговый сайт для угона аккаунта.</span></label>
+                <label class="option-item"><input type="radio" name="sim6_opt" value="wrong"> <span>Введу код из СМС, чтобы помочь победить.</span></label>
+            </div>
+            <div class="btn-group"><button type="button" class="btn btn-primary" onclick="checkSimRadio('sim6')">Проверить</button></div>
+            <div id="sim6_fb" class="feedback"></div>
+        </div>
+
+        <div class="exercise-block" id="sim7">
+            <h3>Тренажер 7. Приватность в соцсетях</h3>
+            <p>Ты сфотографировал билет на поезд / самолёт со штрихкодом. Можно ли выложить его в открытый доступ?</p>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="sim7_opt" value="wrong"> <span>Да, в штрихкоде нет никакой личной информации.</span></label>
+                <label class="option-item"><input type="radio" name="sim7_opt" value="correct"> <span>Нет, по штрихкоду и номеру брони можно узнать персональные данные или отменить поездку.</span></label>
+            </div>
+            <div class="btn-group"><button type="button" class="btn btn-primary" onclick="checkSimRadio('sim7')">Проверить</button></div>
+            <div id="sim7_fb" class="feedback"></div>
+        </div>
+
+        <div class="exercise-block" id="sim8">
+            <h3>Тренажер 8. Открытый Wi-Fi</h3>
+            <p>Чего категорически нельзя делать при подключении к бесплатному публичному Wi-Fi в кафе или ТЦ?</p>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="sim8_opt" value="correct"> <span>Заходить в банковские приложения и вводить важные пароли.</span></label>
+                <label class="option-item"><input type="radio" name="sim8_opt" value="wrong"> <span>Искать расписание транспорта или афишу кино.</span></label>
+            </div>
+            <div class="btn-group"><button type="button" class="btn btn-primary" onclick="checkSimRadio('sim8')">Проверить</button></div>
+            <div id="sim8_fb" class="feedback"></div>
+        </div>
+
+        <div class="exercise-block" id="sim9">
+            <h3>Тренажер 9. Защита от кибербуллинга</h3>
+            <p>В мессенджере тебе начали приходить оскорбления и угрозы. Что нужно сделать в первую очередь?</p>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="sim9_opt" value="wrong"> <span>Сразу удалить всю переписку и вступить в перепалку.</span></label>
+                <label class="option-item"><input type="radio" name="sim9_opt" value="correct"> <span>Сделать скриншоты с ником и временем, заблокировать обидчика и показать взрослым.</span></label>
+            </div>
+            <div class="btn-group"><button type="button" class="btn btn-primary" onclick="checkSimRadio('sim9')">Проверить</button></div>
+            <div id="sim9_fb" class="feedback"></div>
+        </div>
+
+        <div class="exercise-block" id="sim10">
+            <h3>Тренажер 10. Файлы из интернета</h3>
+            <p>Вместо скачанного реферата в архиве оказался файл с расширением <code>.exe</code>. Твои действия?</p>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="sim10_opt" value="correct"> <span>Не запускать и сразу удалить — под видом документа скрывается программа-вирус.</span></label>
+                <label class="option-item"><input type="radio" name="sim10_opt" value="wrong"> <span>Запустить файл, чтобы посмотреть текст реферата.</span></label>
+            </div>
+            <div class="btn-group"><button type="button" class="btn btn-primary" onclick="checkSimRadio('sim10')">Проверить</button></div>
+            <div id="sim10_fb" class="feedback"></div>
+        </div>
+        <script>
+        function checkSim1() {
+            var val1 = document.getElementById('sim1_in1').value.trim().toLowerCase();
+            var val2 = document.getElementById('sim1_in2').value.trim().toLowerCase();
+            var fb = document.getElementById('sim1_fb');
+
+            var ok1 = val1.includes('адрес') || val1.includes('ссылк') || val1.includes('домен') || val1.includes('url') || val1.includes('сайт') || val1.includes('строк');
+            var ok2 = val2.includes('говорить') || val2.includes('передавать') || val2.includes('сообщать') || val2.includes('делиться') || val2.includes('отправлять') || val2.includes('показывать') || val2.includes('разглашать') || val2.includes('диктовать') || val2.includes('вводить') || val2.includes('писать');
+
+            if (ok1 && ok2) {
+                if (typeof playSound === 'function') playSound('success');
+                fb.className = 'feedback correct-text';
+                fb.innerText = '✓ Верно! Отличная работа.';
+            } else {
+                if (typeof playSound === 'function') playSound('error');
+                fb.className = 'feedback wrong-text';
+                fb.innerText = '✕ Ошибка. Подумай, какую строку браузера проверяют и что нельзя делать с кодами из SMS.';
+            }
+        }
+
+        function resetSim1() {
+            document.getElementById('sim1_in1').value = '';
+            document.getElementById('sim1_in2').value = '';
+            var fb = document.getElementById('sim1_fb');
+            fb.innerText = '';
+            fb.className = 'feedback';
+        }
+
+        function checkSimRadio(simId) {
+            var selected = document.querySelector('input[name="' + simId + '_opt"]:checked');
+            var fb = document.getElementById(simId + '_fb');
+            var items = document.querySelectorAll('#' + simId + ' .option-item');
+            for (var i = 0; i < items.length; i++) { items[i].className = 'option-item'; }
+
+            if (!selected) {
+                fb.className = 'feedback wrong-text';
+                fb.innerText = 'Выберите вариант!';
+                return;
+            }
+            if (selected.value == 'correct') {
+                if (typeof playSound === 'function') playSound('success');
+                selected.closest('.option-item').classList.add('correct-choice');
+                fb.className = 'feedback correct-text';
+                fb.innerText = '✓ Правильно! Отличное решение.';
+            } else {
+                if (typeof playSound === 'function') playSound('error');
+                selected.closest('.option-item').classList.add('wrong-choice');
+                fb.className = 'feedback wrong-text';
+                fb.innerText = '✕ Неверно! Это рискованно.';
+            }
+        }
+
+        function checkSim3() {
+            var c1 = document.getElementById('sim3_cb1').checked;
+            var c2 = document.getElementById('sim3_cb2').checked;
+            var c3 = document.getElementById('sim3_cb3').checked;
+            var fb = document.getElementById('sim3_fb');
+
+            if (c1 && c3 && !c2) {
+                if (typeof playSound === 'function') playSound('success');
+                fb.className = 'feedback correct-text';
+                fb.innerText = '✓ Верно! Выбраны все безопасные действия.';
+            } else {
+                if (typeof playSound === 'function') playSound('error');
+                fb.className = 'feedback wrong-text';
+                fb.innerText = '✕ Ошибка! Проверьте каждый пункт внимательно.';
+            }
+        }
+        </script>
+
+        </div>
+
+        <!-- ТАБ: КОНТРОЛЬ ЦИФРОВОЙ ГРАМОТНОСТИ -->
+        <div id="test" class="tab-content">
+            <h2 style="color: #22D3EE; text-align: center;">📝 Итоговый контроль: 10 вопросов эрудиции</h2>
+            <form id="quizForm">
+                <div class="question-block"><h3>1. Поддельный сайт-клон — это...</h3>
+                    <div class="options-list">
+                        <label class="option-item"><input type="radio" name="q1" value="1"> <span>Фишинг</span></label>
+                        <label class="option-item"><input type="radio" name="q1" value="0"> <span>Дипфейк</span></label>
+                    </div>
+                </div>
+                <div class="question-block"><h3>2. Двойная защита (пароль + СМС-код) — это...</h3>
+                    <div class="options-list">
+                        <label class="option-item"><input type="radio" name="q2" value="0"> <span>Антивирус</span></label>
+                        <label class="option-item"><input type="radio" name="q2" value="1"> <span>Двухфакторная аутентификация (2FA)</span></label>
+                    </div>
+                </div>
+                <div class="question-block"><h3>3. С какого возраста наступает ответственность за киберпреступления в РБ?</h3>
+                    <div class="options-list">
+                        <label class="option-item"><input type="radio" name="q3" value="1"> <span>С 14 лет (за хищения, сваттинг), с 16 лет (за дропперство и взлом)</span></label>
+                        <label class="option-item"><input type="radio" name="q3" value="0"> <span>Только с 18 лет</span></label>
+                    </div>
+                </div>
+                <div class="question-block"><h3>4. Использование ИИ для подделки лица и голоса на видео называется...</h3>
+                    <div class="options-list">
+                        <label class="option-item"><input type="radio" name="q4" value="1"> <span>Дипфейк</span></label>
+                        <label class="option-item"><input type="radio" name="q4" value="0"> <span>Спам</span></label>
+                    </div>
+                </div>
+                <div class="question-block"><h3>5. Передача своей банковской карты другим лицам для перевода чужих денег — это...</h3>
+                    <div class="options-list">
+                        <label class="option-item"><input type="radio" name="q5" value="1"> <span>Дропперство (соучастие в преступлении)</span></label>
+                        <label class="option-item"><input type="radio" name="q5" value="0"> <span>Обычная аренда карты</span></label>
+                    </div>
+                </div>
+
+
+                <div class="question-block"><h3>6. Можно ли верить сообщениям от администрации игр, требующим твой пароль?</h3>
+                    <div class="options-list">
+                        <label class="option-item"><input type="radio" name="q6" value="0"> <span>Да, они же главные на сервере.</span></label>
+                        <label class="option-item"><input type="radio" name="q6" value="1"> <span>Нет, настоящие администраторы никогда не запрашивают пароли.</span></label>
+                    </div>
+                </div>
+                <div class="question-block"><h3>7. Что такое social engineering?</h3>
+                    <div class="options-list">
+                        <label class="option-item"><input type="radio" name="q7" value="1"> <span>Метод психологического обмана и манипуляции человеком</span></label>
+                        <label class="option-item"><input type="radio" name="q7" value="0"> <span>Наука о сборке компьютеров</span></label>
+                    </div>
+                </div>
+                <div class="question-block"><h3>8. Какая комбинация символов является самым надежным паролем?</h3>
+                    <div class="options-list">
+                        <label class="option-item"><input type="radio" name="q8" value="1"> <span>K3j#9!pLz_mQ</span></label>
+                        <label class="option-item"><input type="radio" name="q8" value="0"> <span>qwerty2012</span></label>
+                    </div>
+                </div>
+                <div class="question-block"><h3>9. Что нужно сделать перед загрузкой незнакомого файла из интернета?</h3>
+                    <div class="options-list">
+                        <label class="option-item"><input type="radio" name="q9" value="1"> <span>Убедиться в надежности сайта и включить антивирус</span></label>
+                        <label class="option-item"><input type="radio" name="q9" value="0"> <span>Быстро отключить защиту компьютера</span></label>
+                    </div>
+                </div>
+                <div class="question-block"><h3>10. Кто несет ответственность за поступки детей в интернете до их 14-летия?</h3>
+                    <div class="options-list">
+                        <label class="option-item"><input type="radio" name="q10" value="1"> <span>Родители или законные представители</span></label>
+                        <label class="option-item"><input type="radio" name="q10" value="0"> <span>Провайдер связи</span></label>
+                    </div>
+                </div>
+            </form>
+            <div class="btn-group"><button class="btn btn-primary" onclick="checkQuiz()">Узнать результат</button><button class="btn btn-secondary" onclick="resetQuiz()">Сбросить</button></div>
+            <div class="result-box" id="quizResult"><h3>Твой результат:</h3><div class="result-score" id="scoreVal">0 / 10</div><p id="scoreComment" style="font-weight: 600; font-size: 1.2rem;"></p></div>
+
+        </div>
+
+        <!-- ТАБ: ПРАВОВОЙ НАВИГАТОР И КАЛЬКУЛЯТОР РИСКОВ -->
+        <div id="parents" class="tab-content">
+            <h2 style="color: #22D3EE; text-align: center;">👨‍👩‍👧 Правовой навигатор</h2>
+            <div class="card info">
+                <div style="font-style: normal; color: #E2E8F0; line-height: 1.6; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 12px; padding: 20px 24px; margin-bottom: 24px;">
+    <div style="margin-bottom: 18px;">
+        <p style="font-size: 1.05rem; margin-bottom: 4px; color: #FDE047;"><b>💳 1. Дропперство и чужие банковские карты (ст. 212, ст. 222 УК РБ)</b></p>
+        <p style="font-size: 1rem; color: var(--text-muted); margin-bottom: 5px;">Передача своей банковской карты, логина и пароля от интернет-банкинга или реквизитов третьим лицам для транзита украденных денег (даже за небольшое вознаграждение) делает подростка соучастником преступления.</p>
+        <p style="font-size: 1rem;">Ответственность за хищение имущества путём модификации компьютерной техники (<a href="https://pravo.by" target="_blank" style="color: var(--neon-green);">ст. 212 УК РБ</a>) наступает <b>с 14 лет</b>, а за незаконный оборот средств платежей (<a href="https://pravo.by" target="_blank" style="color: var(--neon-green);">ст. 222 УК РБ</a>) — <b>с 16 лет</b>. Кроме того, родители несовершеннолетнего привлекаются к гражданской ответственности за возмещение причинённого ущерба.</p>
+    </div>
+
+    <div style="margin-bottom: 18px;">
+        <p style="font-size: 1.05rem; margin-bottom: 4px; color: #FDE047;"><b>🚨 2. Ложные сообщения об опасности — сваттинг (ст. 340 УК РБ)</b></p>
+        <p style="font-size: 1rem; color: var(--text-muted); margin-bottom: 5px;">Шутливые, спорные или мстительные сообщения в мессенджерах и на электронную почту о «минировании» школ, торговых центров и других объектов квалифицируются по <a href="https://pravo.by" target="_blank" style="color: var(--neon-green);">ст. 340 УК РБ</a> (Заведомо ложное сообщение об опасности).</p>
+        <p style="font-size: 1rem;">Уголовная ответственность по этой статье наступает <b>с 14 лет</b>. Помимо уголовного наказания, виновный (или его законные представители) обязан полностью возместить материальный ущерб, включая затраты на выезд милиции, сапёров и МЧС.</p>
+    </div>
+
+    <div style="margin-bottom: 18px;">
+        <p style="font-size: 1.05rem; margin-bottom: 4px; color: #FDE047;"><b>💻 3. Неправомерный доступ к аккаунтам — кибер-кражи (ст. 349 УК РБ)</b></p>
+        <p style="font-size: 1rem; color: var(--text-muted); margin-bottom: 5px;">Взлом чужого игрового профиля или мессенджера, подбор пароля и кража виртуальной собственности (скинов, игровой валюты, каналов) квалифицируются как неправомерный доступ к компьютерной информации (<a href="https://pravo.by" target="_blank" style="color: var(--neon-green);">ст. 349 УК РБ</a>) или хищение.</p>
+        <p style="font-size: 1rem;">Уголовная ответственность по ст. 349 наступает <b>с 16 лет</b>. Если нарушителю меньше 16 лет, причинённый ущерб возмещают родители, а с самим подростком проводится индивидуальная профилактическая работа в инспекции по делам несовершеннолетних (ИДН).</p>
+    </div>
+
+    <div style="margin-bottom: 18px;">
+        <p style="font-size: 1.05rem; margin-bottom: 4px; color: #FDE047;"><b>💬 4. Оскорбления и травля в сети — кибербуллинг (ст. 10.2 КоАП РБ)</b></p>
+        <p style="font-size: 1rem; color: var(--text-muted); margin-bottom: 6px;">Умышленное унижение чести и достоинства личности, выраженное в неприличной форме (включая сообщения в общих чатах, комментарии, мемы и видео), является административным правонарушением по <a href="https://pravo.by" target="_blank" style="color: var(--neon-green);">ст. 10.2 КоАП РБ</a>.</p>
+        <ul style="font-size: 1rem; padding-left: 20px; line-height: 1.5;">
+            <li><b>Ответственность:</b> штраф (по ч. 2 статьи за публичное оскорбление в интернете — до 200 базовых величин, либо общественные работы, либо административный арест).</li>
+            <li><b>Возраст:</b> самостоятельно отвечает подросток, достигший <b>14 лет</b>. Если нарушителю меньше 14 лет, к ответственности за невыполнение обязанностей по воспитанию детей привлекаются родители (<a href="https://pravo.by" target="_blank" style="color: var(--neon-green);">ст. 10.3 КоАП РБ</a>).</li>
+            <li><b>Дополнительно:</b> потерпевшая сторона вправе требовать денежную компенсацию морального вреда в гражданском порядке.</li>
+        </ul>
+    </div>
+
+    <div>
+        <p style="font-size: 1.05rem; margin-bottom: 4px; color: #FDE047;"><b>🛡️ 5. Семейная кибергигиена — правило «Кодового слова»</b></p>
+        <p style="font-size: 1rem; color: var(--text-muted); margin-bottom: 5px;">Внедрите внутри семьи секретное «кодовое слово», которое знают только близкие. Если ребёнок или родители получают тревожное сообщение либо звонок с просьбой срочно перевести деньги от имени «родственника» или «друга», проверка кодовым словом позволит за секунды распознать дипфейк или взлом аккаунта.</p>
+        <p style="font-size: 1rem;">Это не норма закона, а обязательная практическая мера защиты семьи от телефонного и сетевого мошенничества.</p>
+    </div>
+</div>
+
+                
+        <div class="parent-calc-container">
+    <h4 style="font-size: 1.4rem; margin-bottom: 10px; color: #22D3EE; text-align: center;">📊 Диагностический калькулятор цифровых угроз ребенка</h4>
+    <p style="font-size:0.95rem; color: var(--text-muted); margin-bottom:12px;">Отметьте наблюдаемые факторы поведения вашего ребенка (каждый пункт добавляет 25% к индексу тревоги):</p>
+    <div class="options-list">
+        <label class="option-item"><input type="checkbox" class="parent-risk-cb" value="25" onclick="calcParentRisk()"> <span>Ребенок резко скрывает экран смартфона или закрывает вкладки при появлении взрослых.</span></label>
+        <label class="option-item"><input type="checkbox" class="parent-risk-cb" value="25" onclick="calcParentRisk()"> <span>На телефон приходят СМС с кодами подтверждения, которые он не запрашивал.</span></label>
+        <label class="option-item"><input type="checkbox" class="parent-risk-cb" value="25" onclick="calcParentRisk()"> <span>Появились карманные деньги или новые вещи, источник которых он отказывается назвать.</span></label>
+        <label class="option-item"><input type="checkbox" class="parent-risk-cb" value="25" onclick="calcParentRisk()"> <span>В телефоне появились незнакомые банковские приложения или закрытые чаты с «кураторами».</span></label>
+    </div>
+    <div class="calc-score-box">
+        <div>Уровень цифровой уязвимости:</div>
+        <div class="calc-score-val" id="parentRiskVal">0%</div>
+        <div id="parentRiskComment" style="font-weight:700; margin-top:5px; color: var(--success);">БЕЗОПАСНО</div>
+    </div>
+</div>
+
+        </div>
+    </div>
+
+
+    <script>
+        // ИНТЕРАКТИВНЫЙ ДЕШБОРД НАВИГАЦИИ ПО КЛИКУ НА КАРТЫ
+        function openTab(evt, tabId) {
+            const contents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < contents.length; i++) contents[i].classList.remove('active');
+            
+            const cards = document.querySelectorAll('.nav-card');
+            cards.forEach(card => card.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            
+            // Находим и подсвечиваем активную карту на дешборде
+            const clickedCard = document.getElementById('btn_' + tabId);
+            if(clickedCard) { clickedCard.classList.add('active'); }
+            else if(evt && evt.currentTarget) { evt.currentTarget.classList.add('active'); }
+            
+            playSound('success');
+            document.getElementById(tabId).scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function toggleCard(cardId) {
+            const card = document.getElementById(cardId);
+            if (card) { card.classList.toggle('flipped'); playSound('success'); }
+        }
+
+        // ИСПРАВЛЕННЫЙ ДВИЖОК СЮЖЕТНОГО КВЕСТА: ТЕКСТ ВЫВОДИТСЯ ПРЯМО В ЧАТБOКС
+        function nextQuestStep(currentStep, isCorrectClick) {
+            const container = document.getElementById('chatContainer');
+            const answers = document.getElementById('chatAnswers');
+            const fb = document.getElementById('chat_feedback');
+            
+            if (currentStep === 1) {
+                if (isCorrectClick) {
+                    playSound('success');
+                    container.innerHTML += `<div class="chat-msg msg-user">🔒 Никаких кодов. Поддержка их никогда не просит.</div>`;
+                    container.innerHTML += `<div class="chat-msg msg-hacker"><b>🤖 Незнакомец (Шаг 2):</b> Ладно, раскусил! Но я твой друг! Срочно перейди по этой ссылке <u>http://robl0x-free-bonus.ru</u>, там раздают бесплатную валюту за авторизацию!</div>`;
+                    answers.innerHTML = `
+                        <button class="btn btn-secondary" onclick="nextQuestStep(2, false)">⚠️ Круто, авторизуюсь ради бесплатных бонусов!</button>
+                        <button class="btn btn-primary" onclick="nextQuestStep(2, true)">🔒 Ссылка фишинговая, адрес фальшивый. В бан!</button>
+                    `;
+                    fb.style.display = 'none';
+                } else {
+                    playSound('error');
+                    container.innerHTML += `<div class="chat-msg msg-user">⚠️ Вот держи код: 7749!</div>`;
+                    fb.className = 'feedback wrong-text';
+                    fb.innerText = '❌ Плохо, тебя взломали! Попробуй еще раз.';
+                    container.innerHTML += `<div class="chat-msg msg-hacker" style="background: rgba(239, 68, 68, 0.2); font-weight: 700;">❌ Плохо, тебя взломали! Попробуй еще раз.</div>`;
+                    answers.innerHTML = `<button class="btn btn-primary" onclick="restartQuest()">🔄 Попробовать еще раз</button>`;
+                }
+            } else if (currentStep === 2) {
+                if (isCorrectClick) {
+                    playSound('success');
+                    container.innerHTML += `<div class="chat-msg msg-user">🔒 Ссылка фишинговая, адрес фальшивый. В бан!</div>`;
+                    container.innerHTML += `<div class="chat-msg msg-hacker"><b>🤖 Незнакомец (Шаг 3):</b> *Присылает видеосообщение*: Привет! Это точно я, у меня ЧП, переведи мне срочно 500 рублей на карту!</div>`;
+                    answers.innerHTML = `
+                        <button class="btn btn-secondary" onclick="nextQuestStep(3, false)">⚠️ Это точно он, на видео его лицо! Перевожу.</button>
+                        <button class="btn btn-primary" onclick="nextQuestStep(3, true)">🔒 Это ИИ-дипфейк. Позвоню другу по телефону для проверки!</button>
+                    `;
+                    fb.style.display = 'none';
+                } else {
+                    playSound('error');
+                    container.innerHTML += `<div class="chat-msg msg-user">⚠️ Сейчас авторизуюсь!</div>`;
+                    fb.className = 'feedback wrong-text';
+                    fb.innerText = '❌ Плохо, тебя взломали! Попробуй еще раз.';
+                    container.innerHTML += `<div class="chat-msg msg-hacker" style="background: rgba(239, 68, 68, 0.2); font-weight: 700;">❌ Плохо, тебя взломали! Попробуй еще раз.</div>`;
+                    answers.innerHTML = `<button class="btn btn-primary" onclick="restartQuest()">🔄 Попробовать еще раз</button>`;
+                }
+            } else if (currentStep === 3) {
+                if (isCorrectClick) {
+                    playSound('success');
+                    container.innerHTML += `<div class="chat-msg msg-user">🔒 Это ИИ-дипфейк. Позвоню другу по телефону для проверки!</div>`;
+                    fb.className = 'feedback correct-text';
+                    fb.innerText = '🏆 Молодец, ты отлично справился с заданием! Можешь попробовать снова.';
+                    container.innerHTML += `<div class="chat-msg msg-user" style="background: rgba(16, 185, 129, 0.2); font-weight: 700; color: #34d399;">🏆 Молодец, ты отлично справился с заданием! Можешь попробовать снова.</div>`;
+                } else {
+                    playSound('error');
+                    container.innerHTML += `<div class="chat-msg msg-user">⚠️ Бегу переводить, верю видео!</div>`;
+                    fb.className = 'feedback wrong-text';
+                    fb.innerText = '❌ Плохо, тебя взломали! Попробуй еще раз.';
+                    container.innerHTML += `<div class="chat-msg msg-hacker" style="background: rgba(239, 68, 68, 0.2); font-weight: 700;">❌ Плохо, тебя взломали! Попробуй еще раз.</div>`;
+                }
+                answers.innerHTML = `<button class="btn btn-primary" onclick="restartQuest()">🔄 Попробовать снова</button>`;
+            }
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function restartQuest() {
+            playSound('success');
+            const container = document.getElementById('chatContainer');
+            const answers = document.getElementById('chatAnswers');
+            const fb = document.getElementById('chat_feedback');
+            container.innerHTML = `<div class="chat-msg msg-hacker" id="questStepText"><b>🤖 Незнакомец (Шаг 1):</b> Привет! Твой игровой профиль взломан! Срочно скинь мне проверочный СМС-код, который тебе сейчас пришёл, иначе забаню аккаунт навсегда через минуту!</div>`;
+            answers.innerHTML = `
+                <button class="btn btn-secondary" onclick="nextQuestStep(1, false)">⚠️ Ой, испугался! Вот держи код: 7749!</button>
+                <button class="btn btn-primary" onclick="nextQuestStep(1, true)">🔒 Никаких кодов. Поддержка их никогда не просит.</button>
+            `;
+            fb.style.display = 'none';
+        }
+
+
+        function clickPoster(node, type) {
+            document.querySelectorAll('.poster-node').forEach(n => n.classList.remove('active'));
+            node.classList.add('active');
+            const display = document.getElementById('posterDisplay');
+            const threat = document.getElementById('threatLevel');
+            const actionCard = document.getElementById('actionCard');
+            const actionContent = document.getElementById('actionContent');
+            playSound('success');
+            actionCard.style.display = 'block';
+            const data = {
+                fish: { level: "Критический", class: "threat-high", text: "<b>🎣 Сканирование фишинга:</b> Выявлен скрытый клон игровой панели авторизации. Злоумышленники заменяют символы в URL (например, <i>robl0x.com</i>).", action: "Прекратите ввод данных. Сверьте каждый символ в адресной строке с официальным доменом." },
+                soc: { level: "Высокий", class: "threat-high", text: "<b>🎭 Анализатор угроз:</b> Обнаружена попытка психологического давления в ЛС. Вас шантажируют блокировкой аккаунта, требуя код.", action: "Заблокируйте собеседника. Не вступайте в переговоры и сразу сообщите родителям." },
+                fake: { level: "Средний", class: "threat-medium", text: "<b>🤖 Сканер биометрии:</b> Идентификация ИИ-модификации. Мошенники используют нейросети для генерации фальшивых голосовых.", action: "Перезвоните другу по сотовой связи. Спросите то, что знает только он, либо потребуйте семейное кодовое слово." },
+                pass: { level: "Низкий", class: "threat-low", text: "<b>🔑 Анализ стойкости криптографии:</b> Простые комбинации компрометируются брутфорс-ботами за доли секунды.", action: "Установите пароль длиной не менее 12 символов, содержащий заглавные буквы, цифры и спецсимволы." },
+                drop: { level: "Критический", class: "threat-high", text: "<b>💳 Юридический мониторинг:</b> Выявлена схема 'Быстрого заработка за карту'. Передача своей карты третьим лицам делает вас соучастником преступления.", action: "Категорически отказывайтесь от подобных предложений. По закону владелец карты несёт полную ответственность." },
+                wifi: { level: "Средний", class: "threat-medium", text: "<b>📶 Сканирование беспроводной сети:</b> Публичный Wi-Fi без пароля не шифрует ваш трафик. Снифферы могут перехватить данные.", action: "Не вводите важные пароли и не совершайте платежи при подключении к открытым сетям." },
+                virus: { level: "Высокий", class: "threat-high", text: "<b>🪱 Мониторинг файловой системы:</b> 'Бесплатные читы' часто содержат скрытые вирусы, которые мгновенно воруют файлы сессий браузера.", action: "Удалите подозрительный файл. Скачивайте контент исключительно из проверенных официальных магазинов." },
+                trace: { level: "Низкий", class: "threat-low", text: "<b>👣 Анализ цифрового следа:</b> Любая опубликованная информация, геолокация или фото документов остаются на серверах навсегда.", action: "Соблюдайте цифровую культуру и этику. Перед публикацией любого контента подумайте о последствиях." }
+            };
+            threat.innerHTML = `Уровень: ${data[type].level}`;
+            threat.className = `threat-indicator ${data[type].class}`;
+            display.innerHTML = data[type].text;
+            actionContent.innerHTML = data[type].action;
+        }
+
+        function playSound(type) {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext; if (!AudioContext) return;
+                const ctx = new AudioContext(); if (ctx.state === 'suspended') { ctx.resume(); }
+                const osc = ctx.createOscillator(); const gain = ctx.createGain();
+                osc.connect(gain); gain.connect(ctx.destination);
+                if (type === 'success') { osc.type = 'sine'; osc.frequency.setValueAtTime(587.33, ctx.currentTime); osc.frequency.setValueAtTime(880, ctx.currentTime + 0.1); gain.gain.setValueAtTime(0.08, ctx.currentTime); osc.start(); osc.stop(ctx.currentTime + 0.25); }
+                else if (type === 'error') { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(120, ctx.currentTime); gain.gain.setValueAtTime(0.08, ctx.currentTime); osc.start(); osc.stop(ctx.currentTime + 0.3); }
+            } catch (e) {}
+        }
+
+       function calcParentRisk() {
+    let total = 0;
+    document.querySelectorAll('.parent-risk-cb:checked').forEach(cb => { total += parseInt(cb.value); });
+    const display = document.getElementById('parentRiskVal');
+    const comment = document.getElementById('parentRiskComment');
+    display.innerText = `${total}%`;
+
+    if (total === 0) {
+        comment.innerText = "БЕЗОПАСНО";
+        comment.style.color = "var(--neon-green)";
+    } else if (total === 25) {
+        comment.innerText = "НИЗКИЙ РИСК (Повод для спокойной беседы)";
+        comment.style.color = "#38BDF8";
+    } else if (total === 50) {
+        comment.innerText = "СРЕДНИЙ РИСК (Требует внимания и проверки настроек)";
+        comment.style.color = "var(--warning)";
+    } else {
+        comment.innerText = "КРИТИЧЕСКИЙ УРОВЕНЬ (Нужны срочные меры)";
+        comment.style.color = "var(--danger)";
+    }
+}
+       function checkEx1() {
+    var a1 = document.getElementById('ex1_ans1').value.trim().toLowerCase();
+    var a2 = document.getElementById('ex1_ans2').value.trim().toLowerCase();
+    var fb = document.getElementById('ex1_fb');
+
+    var ok1 = a1.indexOf('адрес') !== -1 || a1.indexOf('ссылк') !== -1 || a1.indexOf('домен') !== -1 || a1.indexOf('url') !== -1 || a1.indexOf('сайт') !== -1 || a1.indexOf('строк') !== -1;
+    var ok2 = a2.indexOf('говорить') !== -1 || a2.indexOf('передавать') !== -1 || a2.indexOf('сообщать') !== -1 || a2.indexOf('делиться') !== -1 || a2.indexOf('отправлять') !== -1 || a2.indexOf('показывать') !== -1 || a2.indexOf('разглашать') !== -1 || a2.indexOf('диктовать') !== -1 || a2.indexOf('вводить') !== -1 || a2.indexOf('писать') !== -1;
+
+    if (ok1 && ok2) {
+        playSound('success');
+        fb.className = 'feedback correct-text';
+        fb.innerText = '✓ Верно! Отличная работа.';
+    } else {
+        playSound('error');
+        fb.className = 'feedback wrong-text';
+        fb.innerText = '✕ Ошибка. Подумай, какую строку браузера проверяют и что нельзя делать с кодами из SMS.';
+    }
+}
+
+function resetEx1() {
+    document.getElementById('ex1_ans1').value = '';
+    document.getElementById('ex1_ans2').value = '';
+    document.getElementById('ex1_fb').innerText = '';
+}
+
+function runChecker(exId, correctValue) {
+    var opt = document.querySelector('input[name="' + exId + '_opt"]:checked');
+    var fb = document.getElementById(exId + '_fb');
+    document.querySelectorAll('#' + exId + ' .option-item').forEach(function(l) {
+        l.className = 'option-item';
+    });
+    if (!opt) {
+        fb.className = 'feedback wrong-text';
+        fb.innerText = 'Выберите вариант!';
+        return;
+    }
+    if (opt.value == correctValue) {
+        playSound('success');
+        opt.closest('.option-item').classList.add('correct-choice');
+        fb.className = 'feedback correct-text';
+        fb.innerText = '✓ Правильно! Отличное решение.';
+    } else {
+        playSound('error');
+        opt.closest('.option-item').classList.add('wrong-choice');
+        fb.className = 'feedback wrong-text';
+        fb.innerText = '✕ Неверно! Это рискованно.';
+    }
+}
+
+function checkEx2() { runChecker('ex2', 'correct'); }
+function checkEx4() { runChecker('ex4', 'correct'); }
+function checkEx5() { runChecker('ex5', 'correct'); }
+function checkEx6() { runChecker('ex6', 'correct'); }
+function checkEx7() { runChecker('ex7', 'correct'); }
+function checkEx8() { runChecker('ex8', 'correct'); }
+function checkEx9() { runChecker('ex9', 'correct'); }
+function checkEx10() { runChecker('ex10', 'correct'); }
+
+function checkEx3() {
+    var cb1 = document.querySelector('input[value="correct1"]').checked;
+    var cb2 = document.querySelector('input[value="correct2"]').checked;
+    var cb3 = document.querySelector('input[value="wrong"]').checked;
+    var fb = document.getElementById('ex3_fb');
+    if (cb1 && cb2 && !cb3) {
+        playSound('success');
+        fb.className = 'feedback correct-text';
+        fb.innerText = '✓ Верно! Выбраны все безопасные действия.';
+    } else {
+        playSound('error');
+        fb.className = 'feedback wrong-text';
+        fb.innerText = '✕ Ошибка! Проверьте каждый пункт внимательно.';
+    }
+}
+
+function checkQuiz() {
+    var score = 0;
+    document.querySelectorAll('#test .option-item').forEach(function(l) {
+        l.className = 'option-item';
+    });
+    for (var i = 1; i <= 10; i++) {
+        var q = document.querySelector('input[name="q' + i + '"]:checked');
+        if (q) {
+            if (q.value == '1') {
+                score++;
+                q.closest('.option-item').classList.add('correct-choice');
+            } else {
+                q.closest('.option-item').classList.add('wrong-choice');
+            }
+        }
+    }
+    var box = document.getElementById('quizResult');
+    var val = document.getElementById('scoreVal');
+    var comm = document.getElementById('scoreComment');
+
+    val.innerText = score + ' / 10';
+    box.style.display = 'block';
+
+    if (score == 10) {
+        playSound('success');
+        comm.innerText = '🏆 Невероятно! Ты идеальный знаток кибербезопасности!';
+        comm.style.color = 'var(--neon-green)';
+    } else if (score >= 8) {
+        playSound('success');
+        comm.innerText = '👍 Хороший результат! Ты знаешь почти все правила, но стоит повторить пару нюансов.';
+        comm.style.color = '#38BDF8';
+    } else if (score >= 5) {
+        playSound('error');
+        comm.innerText = '⚠️ Средний уровень. Базовые правила знакомы, но в сети ты всё ещё уязвим — перечитай разделы выше.';
+        comm.style.color = 'var(--warning)';
+    } else {
+        playSound('error');
+        comm.innerText = '🚨 Низкий результат. Нужно повторить материал и пройти тест снова!';
+        comm.style.color = 'var(--danger)';
+    }
+}
+
+function resetQuiz() {
+    document.getElementById('quizForm').reset();
+    document.querySelectorAll('#test .option-item').forEach(function(l) {
+        l.className = 'option-item';
+    });
+    document.getElementById('quizResult').style.display = 'none';
+}
+
+    </script>
+<footer style="background-color: #0F172A; color: #CBD5E1; text-align: center; padding: 14px 16px; font-size: 13px; line-height: 1.5; margin-top: 30px; border-top: 1px solid rgba(34, 211, 238, 0.25);">
+    <div>Образовательный интернет-ресурс «Интернет — территория безопасности» © 2026 год</div>
+    <div style="color: #94A3B8; font-size: 12px;">Автор: <strong style="color: #22D3EE;">Левоненко Татьяна Александровна</strong> | ГУО «Средняя школа №1 г.п. Корма»</div>
+</footer>
+
+</body>
+</html>
+
+
+
